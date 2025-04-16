@@ -25,7 +25,7 @@ const steps = [
   },
   {
     title: 'Grow Your Skills',
-    description: 'Apply what you've learned and track your progress with your mentor's help.',
+    description: 'Apply what you've learned and track your progress with your mentor\'s help.',
     icon: Award,
     color: 'bg-orange-100 text-orange-600'
   }
