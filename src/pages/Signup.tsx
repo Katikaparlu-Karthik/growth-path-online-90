@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -13,8 +14,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
-import StudentSignupForm from "../../src/login/Signup/StudentSignupFrom";
-import MentorSignupForm from "../../src/login/Signup/MentorSignupFrom";
+import StudentSignupForm from "../login/Signup/StudentSignupForm";
+import MentorSignupForm from "../login/Signup/MentorSignupForm";
 import Login from "./Login";
 
 export default function Signup() {
