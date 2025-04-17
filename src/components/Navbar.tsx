@@ -1,10 +1,24 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Search } from 'lucide-react';
+import LoginModal from './LoginModal';
+import SignupModal from './SignupModal';
 
 const Navbar: React.FC = () => {
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [signupModalOpen, setSignupModalOpen] = useState(false);
+
+  const openLoginModal = () => {
+    setSignupModalOpen(false);
+    setLoginModalOpen(true);
+  };
+
+  const openSignupModal = () => {
+    setLoginModalOpen(false);
+    setSignupModalOpen(true);
+  };
+
   return (
     <nav className="w-full py-4 px-4 md:px-8 border-b bg-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -30,14 +44,34 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="sm" className="hidden md:inline-flex">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="hidden md:inline-flex"
+            onClick={openLoginModal}
+          >
             Log In
           </Button>
-          <Button className="bg-gradient-to-r from-mentor-500 to-learner-500 text-white hover:opacity-90">
+          <Button 
+            className="bg-gradient-to-r from-mentor-500 to-learner-500 text-white hover:opacity-90"
+            onClick={openSignupModal}
+          >
             Get Started
           </Button>
         </div>
       </div>
+
+      <LoginModal 
+        isOpen={loginModalOpen} 
+        onOpenChange={setLoginModalOpen} 
+        onSignUpClick={openSignupModal}
+      />
+
+      <SignupModal 
+        isOpen={signupModalOpen} 
+        onOpenChange={setSignupModalOpen} 
+        onLoginClick={openLoginModal}
+      />
     </nav>
   );
 };
