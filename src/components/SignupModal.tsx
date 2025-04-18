@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -109,11 +108,18 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLogin
 
       toast({
         title: "Account created",
-        description: "Check your email to confirm your account",
+        description: "Your account has been created successfully!",
       });
       
+      // Close the modal
       onOpenChange(false);
-      navigate("/");
+      
+      // Redirect to verification page if user was created
+      if (data.user) {
+        navigate(`/verify?userId=${data.user.id}&type=email`, { replace: true });
+      } else {
+        navigate("/");
+      }
       
     } catch (error) {
       console.error("Signup error:", error);
@@ -163,6 +169,21 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLogin
                     <Input type="email" placeholder="you@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+1 (555) 000-0000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  <p className="text-xs text-gray-500">We'll verify this number for OTP authentication</p>
                 </FormItem>
               )}
             />
@@ -227,20 +248,6 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLogin
                         )}
                       </Button>
                     </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number (optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+1 (555) 000-0000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -27,6 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onOpenChange, onSignUpC
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isOtpLoading, setIsOtpLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -77,7 +78,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onOpenChange, onSignUpC
     }
 
     try {
-      setIsLoading(true);
+      setIsOtpLoading(true);
       const { data, error } = await supabase.auth.signInWithOtp({
         email: email,
       });
@@ -93,8 +94,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onOpenChange, onSignUpC
 
       toast({
         title: "OTP sent",
-        description: "Check your email for the login link",
+        description: "Check your email for the verification code",
       });
+
+      // Close modal and navigate to verification page
+      onOpenChange(false);
+      navigate(`/verify?type=email`);
     } catch (error) {
       console.error("OTP error:", error);
       toast({
@@ -103,7 +108,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onOpenChange, onSignUpC
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsOtpLoading(false);
     }
   };
 
@@ -147,9 +152,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onOpenChange, onSignUpC
             variant="outline" 
             className="w-full" 
             onClick={handleOTP}
-            disabled={isLoading}
+            disabled={isOtpLoading || !email}
           >
-            {isLoading ? "Sending..." : "Send OTP"}
+            {isOtpLoading ? "Sending..." : "Sign in with OTP"}
           </Button>
           <div className="text-center mt-2">
             <p className="text-sm text-gray-500">

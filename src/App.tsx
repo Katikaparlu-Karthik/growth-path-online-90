@@ -11,6 +11,7 @@ import BrowseMentors from "./pages/BrowseMentors";
 import MentorProfile from "./pages/MentorProfile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import VerifyAccount from "./pages/VerifyAccount";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/mentor/:id" element={<MentorProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/verify" element={<VerifyAccount />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
