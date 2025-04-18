@@ -43,7 +43,7 @@ const VerifyAccount = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setEmail(user.email || '');
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('profiles')
           .select('phone')
           .eq('id', user.id)
@@ -51,6 +51,10 @@ const VerifyAccount = () => {
           
         if (data && data.phone) {
           setPhone(data.phone);
+        }
+
+        if (error) {
+          console.error('Error fetching profile:', error);
         }
       }
     } catch (error) {
