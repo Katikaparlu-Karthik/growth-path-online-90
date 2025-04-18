@@ -1,13 +1,52 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import LoginModal from './LoginModal';
 import SignupModal from './SignupModal';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
+import { toast } from '@/components/ui/use-toast';
 
 const Navbar: React.FC = () => {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [signupModalOpen, setSignupModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        
+        // If this is a sign in event, show a welcome toast
+        if (event === 'SIGNED_IN') {
+          toast({
+            title: "Welcome!",
+            description: "You are now signed in",
+          });
+        }
+        
+        // If this is a sign out event, show a goodbye toast
+        if (event === 'SIGNED_OUT') {
+          toast({
+            title: "Goodbye!",
+            description: "You have been signed out",
+          });
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const openLoginModal = () => {
     setSignupModalOpen(false);
@@ -17,6 +56,21 @@ const Navbar: React.FC = () => {
   const openSignupModal = () => {
     setLoginModalOpen(false);
     setSignupModalOpen(true);
+  };
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    
+    if (error) {
+      toast({
+        title: "Sign out failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    navigate('/');
   };
 
   return (
@@ -44,20 +98,38 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="hidden md:inline-flex"
-            onClick={openLoginModal}
-          >
-            Log In
-          </Button>
-          <Button 
-            className="bg-gradient-to-r from-mentor-500 to-learner-500 text-white hover:opacity-90"
-            onClick={openSignupModal}
-          >
-            Get Started
-          </Button>
+          {user ? (
+            <>
+              <span className="hidden md:inline-block text-sm">
+                {user.email}
+              </span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="hidden md:inline-flex"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="hidden md:inline-flex"
+                onClick={openLoginModal}
+              >
+                Log In
+              </Button>
+              <Button 
+                className="bg-gradient-to-r from-mentor-500 to-learner-500 text-white hover:opacity-90"
+                onClick={openSignupModal}
+              >
+                Get Started
+              </Button>
+            </>
+          )}
         </div>
       </div>
 

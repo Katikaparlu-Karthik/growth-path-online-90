@@ -29,6 +29,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -58,6 +61,8 @@ const formSchema = z.object({
 const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLoginClick }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,8 +78,53 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLogin
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setIsLoading(true);
+      
+      // Sign up the user with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            full_name: values.name,
+            role: values.role,
+            phone: values.phone || null,
+            // Include additional metadata
+            skills: values.skills || null,
+            goals: values.goals || null,
+          },
+        },
+      });
+
+      if (error) {
+        toast({
+          title: "Sign up failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Account created",
+        description: "Check your email to confirm your account",
+      });
+      
+      onOpenChange(false);
+      navigate("/");
+      
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast({
+        title: "Sign up failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -259,8 +309,8 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLogin
               />
             )}
 
-            <Button type="submit" className="w-full mt-2 bg-mentor-500 hover:bg-mentor-600">
-              Create Account
+            <Button type="submit" className="w-full mt-2 bg-mentor-500 hover:bg-mentor-600" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Create Account"}
             </Button>
 
             <div className="text-center mt-2">
