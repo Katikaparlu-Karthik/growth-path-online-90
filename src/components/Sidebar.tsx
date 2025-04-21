@@ -19,7 +19,7 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-  SwitchHorizontal,
+  StretchHorizontal,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
@@ -36,7 +36,7 @@ const menuItems = [
   { icon: Settings, label: "Settings", href: "/settings" },
   { icon: HelpCircle, label: "Help", href: "/help" },
   { icon: LogOut, label: "Logout", href: "#logout" },
-  { icon: SwitchHorizontal, label: "Switch Role", href: "/switch-role" },
+  { icon: StretchHorizontal, label: "Switch Role", href: "/switch-role" },
 ];
 
 const AppSidebar = () => {
