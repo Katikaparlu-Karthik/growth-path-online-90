@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -66,18 +66,27 @@ const pastSessions = [
 ];
 
 const MySessions: React.FC = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("upcoming");
   
   useEffect(() => {
-    // This is a simulated data loading effect
-    // In a real app, you would fetch actual data here
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
+    const fetchSessions = async () => {
+      try {
+        // Simulate API call - replace with actual API call when ready
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching sessions:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load sessions. Please try again.",
+          variant: "destructive",
+        });
+        setLoading(false);
+      }
+    };
+
+    fetchSessions();
   }, []);
   
   const handleTabChange = (value: string) => {
@@ -86,14 +95,14 @@ const MySessions: React.FC = () => {
   
   const handleScheduleSession = () => {
     toast({
-      title: "Coming Soon",
+      title: "Schedule Session",
       description: "Session scheduling will be available soon!",
     });
   };
   
   if (loading) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-8 animate-fade-in">
         <div className="flex justify-between items-center mb-6">
           <Skeleton className="h-10 w-64" />
           <Skeleton className="h-10 w-48" />
@@ -113,11 +122,11 @@ const MySessions: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 animate-fade-in">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Sessions</h1>
         <Button 
-          className="bg-mentor-500 hover:bg-mentor-600"
+          className="bg-mentor-500 hover:bg-mentor-600 transition-colors"
           onClick={handleScheduleSession}
         >
           <Plus className="h-4 w-4 mr-2" /> Schedule New Session
@@ -125,13 +134,13 @@ const MySessions: React.FC = () => {
       </div>
       
       <Tabs defaultValue="upcoming" value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="mb-8">
+        <TabsList className="mb-8 bg-background border">
           <TabsTrigger value="upcoming">Upcoming Sessions</TabsTrigger>
           <TabsTrigger value="past">Past Sessions</TabsTrigger>
           <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="upcoming">
+        <TabsContent value="upcoming" className="animate-fade-in">
           <div className="space-y-6">
             {upcomingSessions.length > 0 ? (
               upcomingSessions.map(session => (
@@ -172,7 +181,7 @@ const MySessions: React.FC = () => {
                           <span>Message</span>
                         </Button>
                         <Button 
-                          className="bg-learner-500 hover:bg-learner-600 flex items-center gap-1"
+                          className="bg-learner-500 hover:bg-learner-600 transition-colors flex items-center gap-1"
                           disabled={session.status !== "confirmed"}
                         >
                           <Video className="h-4 w-4" />
@@ -184,10 +193,10 @@ const MySessions: React.FC = () => {
                 </Card>
               ))
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500">You don't have any upcoming sessions.</p>
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <p className="text-gray-500 mb-4">You don't have any upcoming sessions.</p>
                 <Button 
-                  className="mt-4 bg-mentor-500 hover:bg-mentor-600"
+                  className="bg-mentor-500 hover:bg-mentor-600 transition-colors"
                   onClick={handleScheduleSession}
                 >
                   Schedule Your First Session
