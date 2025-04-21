@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -8,14 +9,6 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { fetchUserProgress, fetchLearningPath, updateLearningPathItem, type SkillProgress, type LearningPath } from '@/lib/supabase/progress';
 import { toast } from '@/components/ui/use-toast';
 
-const skillProgress = [
-  { name: 'Leadership', progress: 75 },
-  { name: 'Communication', progress: 85 },
-  { name: 'Technical Skills', progress: 60 },
-  { name: 'Problem Solving', progress: 90 },
-  { name: 'Time Management', progress: 70 },
-];
-
 const monthlyData = [
   { name: 'Jan', sessions: 2, goals: 1 },
   { name: 'Feb', sessions: 4, goals: 2 },
@@ -23,14 +16,6 @@ const monthlyData = [
   { name: 'Apr', sessions: 5, goals: 4 },
   { name: 'May', sessions: 6, goals: 4 },
   { name: 'Jun', sessions: 8, goals: 5 },
-];
-
-const learningPath = [
-  { id: 1, title: 'Career Development Fundamentals', completed: true },
-  { id: 2, title: 'Communication Skills for Professionals', completed: true },
-  { id: 3, title: 'Leadership Essentials', completed: true },
-  { id: 4, title: 'Advanced Problem Solving', completed: false },
-  { id: 5, title: 'Building Professional Networks', completed: false },
 ];
 
 const ProgressTracker: React.FC = () => {
@@ -41,6 +26,9 @@ const ProgressTracker: React.FC = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUserId(session.user.id);
+      } else {
+        // For development purposes, set a mock user ID
+        setUserId('mock-user-id');
       }
     };
     getUser();
@@ -166,7 +154,7 @@ const ProgressTracker: React.FC = () => {
                   <BarChart data={skillProgress} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" domain={[0, 100]} />
-                    <YAxis dataKey="name" type="category" width={120} />
+                    <YAxis dataKey="skill_name" type="category" width={120} />
                     <Tooltip />
                     <Bar dataKey="progress" fill="#8884d8" />
                   </BarChart>
@@ -182,9 +170,9 @@ const ProgressTracker: React.FC = () => {
               <CardContent>
                 <div className="space-y-6">
                   {skillProgress.map((skill) => (
-                    <div key={skill.name} className="space-y-2">
+                    <div key={skill.id} className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="font-medium">{skill.name}</span>
+                        <span className="font-medium">{skill.skill_name}</span>
                         <span>{skill.progress}%</span>
                       </div>
                       <Progress value={skill.progress} className="h-2" />
