@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -113,13 +114,12 @@ const BecomeMentor: React.FC = () => {
         throw profileError;
       }
       
-      // Define the function type explicitly to bypass TypeScript's limitations
-      type RPCFunction = <T = any>(fn: string, params?: any) => Promise<{ data: T; error: any }>;
-      
-      // Cast the rpc method to our custom type
-      const rpcCall = supabase.rpc as RPCFunction;
-      
-      const { error: mentorError } = await rpcCall(
+      // Use a more accurate approach to call RPC functions
+      // First cast to unknown, then to the desired function signature
+      const { data: mentorData, error: mentorError } = await (supabase.rpc as unknown as (
+        fn: string,
+        params?: any
+      ) => Promise<{ data: any; error: any }>)(
         'insert_mentor_profile', 
         {
           user_id: session.user.id,
