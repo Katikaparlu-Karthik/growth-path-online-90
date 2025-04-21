@@ -108,14 +108,14 @@ const Navbar: React.FC = () => {
 
         <div className="flex items-center space-x-4">
           {user ? (
-            <>
-              <span className="hidden md:inline-block text-sm mr-2">
+            <div className="flex items-center">
+              <span className="hidden md:inline-block text-sm mr-4">
                 {getFirstName(user.email || '')}
               </span>
               <SidebarTrigger className="inline-flex">
                 <AlignJustify className="h-6 w-6" />
               </SidebarTrigger>
-            </>
+            </div>
           ) : (
             <>
               <Button 
