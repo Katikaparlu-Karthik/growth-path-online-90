@@ -17,6 +17,15 @@ import Signup from "./pages/Signup";
 import VerifyAccount from "./pages/VerifyAccount";
 import Pricing from "./pages/Pricing";
 import Resources from "./pages/Resources";
+import Profile from "./pages/profile";
+import MyLearning from "./pages/learning";
+import Favorites from "./pages/favorites";
+import MyMentors from "./pages/mentors";
+import MySessions from "./pages/sessions";
+import ProgressTracker from "./pages/progress";
+import Settings from "./pages/settings";
+import Help from "./pages/help";
+import SwitchRole from "./pages/switch-role";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +51,18 @@ const App = () => (
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/verify" element={<VerifyAccount />} />
                   <Route path="/pricing" element={<Pricing />} />
+                  
+                  {/* Sidebar routes */}
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/learning" element={<MyLearning />} />
+                  <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/mentors" element={<MyMentors />} />
+                  <Route path="/sessions" element={<MySessions />} />
+                  <Route path="/progress" element={<ProgressTracker />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/help" element={<Help />} />
+                  <Route path="/switch-role" element={<SwitchRole />} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
