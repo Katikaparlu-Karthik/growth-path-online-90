@@ -7,6 +7,8 @@ import SignupModal from './SignupModal';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/use-toast';
+import { Menu } from 'lucide-react';
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Navbar: React.FC = () => {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -73,14 +75,24 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
 
+  // Helper function to get first name
+  const getFirstName = (email: string) => {
+    return email.split('@')[0];
+  };
+
   return (
     <nav className="w-full py-4 px-4 md:px-8 border-b bg-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <span className="text-2xl font-bold text-mentor-500">
-            Growth<span className="text-learner-500">Path</span>
-          </span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="md:hidden">
+            <Menu className="h-6 w-6" />
+          </SidebarTrigger>
+          <Link to="/" className="flex items-center">
+            <span className="text-2xl font-bold text-mentor-500">
+              Growth<span className="text-learner-500">Path</span>
+            </span>
+          </Link>
+        </div>
 
         <div className="hidden md:flex items-center space-x-6">
           <Link to="/browse" className="text-gray-700 hover:text-mentor-500 font-medium transition-colors">
@@ -101,16 +113,11 @@ const Navbar: React.FC = () => {
           {user ? (
             <>
               <span className="hidden md:inline-block text-sm">
-                {user.email}
+                {getFirstName(user.email || '')}
               </span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="hidden md:inline-flex"
-                onClick={handleSignOut}
-              >
-                Sign Out
-              </Button>
+              <SidebarTrigger className="hidden md:inline-flex">
+                <Menu className="h-6 w-6" />
+              </SidebarTrigger>
             </>
           ) : (
             <>
