@@ -1,20 +1,25 @@
 
 import { render, screen } from '@testing-library/react';
 import LearningPath from '../LearningPath';
+import type { LearningPath as LearningPathType } from '@/lib/supabase/progress';
 
-const mockLearningPathItems = [
+const mockLearningPathItems: LearningPathType[] = [
   {
     id: '1',
+    user_id: 'test-user-1',
     title: 'Career Development Fundamentals',
     completed: true,
     order: 1,
+    created_at: '2024-01-01T00:00:00Z'
   },
   {
     id: '2',
+    user_id: 'test-user-1',
     title: 'Communication Skills',
     completed: false,
     order: 2,
-  },
+    created_at: '2024-01-01T00:00:00Z'
+  }
 ];
 
 describe('LearningPath', () => {
@@ -32,4 +37,3 @@ describe('LearningPath', () => {
     expect(screen.getByText('In progress')).toBeInTheDocument();
   });
 });
-

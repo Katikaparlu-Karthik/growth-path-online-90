@@ -14,4 +14,3 @@ describe('StatsCards', () => {
     expect(screen.getByText('48')).toBeInTheDocument();
   });
 });
-

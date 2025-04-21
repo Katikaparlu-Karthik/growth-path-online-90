@@ -10,4 +10,3 @@ describe('MonthlyProgressChart', () => {
     expect(screen.getByText('Sessions and goals over time')).toBeInTheDocument();
   });
 });
-
