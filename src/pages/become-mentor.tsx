@@ -115,8 +115,10 @@ const BecomeMentor: React.FC = () => {
       }
       
       // Use our custom RPC function to insert mentor profile
+      // We're using the generic any type to bypass TypeScript's strict checking
+      // since the RPC function is defined in SQL but not in the TypeScript definitions
       const { error: mentorError } = await supabase.rpc(
-        'insert_mentor_profile',
+        'insert_mentor_profile' as any,
         {
           user_id: session.user.id,
           bio: values.bio,
