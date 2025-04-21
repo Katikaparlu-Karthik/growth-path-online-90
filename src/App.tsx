@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import AppSidebar from "./components/Sidebar";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import HowItWorks from "./pages/HowItWorks";
@@ -22,19 +24,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/browse" element={<BrowseMentors />} />
-          <Route path="/mentor/:id" element={<MentorProfile />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/verify" element={<VerifyAccount />} />
-          <Route path="/pricing" element={<Pricing />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <SidebarProvider defaultOpen={true}>
+          <div className="flex min-h-screen w-full bg-background">
+            <AppSidebar />
+            <main className="flex-1">
+              <div className="flex items-center border-b px-4 h-16">
+                <SidebarTrigger />
+              </div>
+              <div className="p-4">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
+                  <Route path="/browse" element={<BrowseMentors />} />
+                  <Route path="/mentor/:id" element={<MentorProfile />} />
+                  <Route path="/resources" element={<Resources />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/verify" element={<VerifyAccount />} />
+                  <Route path="/pricing" element={<Pricing />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+            </main>
+          </div>
+        </SidebarProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
