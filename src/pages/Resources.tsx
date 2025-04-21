@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Book, FileText2, FileVideo, Link as LinkIcon } from 'lucide-react';
+import { Book, FileText, FileVideo, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const resources = [
@@ -93,7 +93,7 @@ const Resources: React.FC = () => {
                     <div className="col-span-2 text-center text-gray-500">No resources found.</div>
                   )}
                   {filtered.map((resource) => {
-                    const Icon = typeToIcon[resource.type as keyof typeof typeToIcon] || FileText2;
+                    const Icon = typeToIcon[resource.type as keyof typeof typeToIcon] || FileText;
                     return (
                       <Card key={resource.id} className="hover:shadow-xl transition">
                         <CardHeader className="flex flex-row items-center gap-4">
