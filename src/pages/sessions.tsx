@@ -1,10 +1,13 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, Video, Plus, MessageSquare } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 
 const upcomingSessions = [
   {
@@ -63,16 +66,65 @@ const pastSessions = [
 ];
 
 const MySessions: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("upcoming");
+  
+  useEffect(() => {
+    // This is a simulated data loading effect
+    // In a real app, you would fetch actual data here
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+  
+  const handleScheduleSession = () => {
+    toast({
+      title: "Coming Soon",
+      description: "Session scheduling will be available soon!",
+    });
+  };
+  
+  if (loading) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="flex justify-between items-center mb-6">
+          <Skeleton className="h-10 w-64" />
+          <Skeleton className="h-10 w-48" />
+        </div>
+        
+        <div className="mb-8">
+          <Skeleton className="h-10 w-full" />
+        </div>
+        
+        <div className="space-y-6">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Sessions</h1>
-        <Button className="bg-mentor-500 hover:bg-mentor-600">
+        <Button 
+          className="bg-mentor-500 hover:bg-mentor-600"
+          onClick={handleScheduleSession}
+        >
           <Plus className="h-4 w-4 mr-2" /> Schedule New Session
         </Button>
       </div>
       
-      <Tabs defaultValue="upcoming">
+      <Tabs defaultValue="upcoming" value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="mb-8">
           <TabsTrigger value="upcoming">Upcoming Sessions</TabsTrigger>
           <TabsTrigger value="past">Past Sessions</TabsTrigger>
@@ -81,101 +133,119 @@ const MySessions: React.FC = () => {
         
         <TabsContent value="upcoming">
           <div className="space-y-6">
-            {upcomingSessions.map(session => (
-              <Card key={session.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row items-center gap-6">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src={session.image} alt={session.mentorName} />
-                      <AvatarFallback>{session.mentorName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 space-y-1">
-                      <h3 className="text-xl font-semibold">{session.topic}</h3>
-                      <p className="text-gray-700">with {session.mentorName}, {session.mentorRole}</p>
+            {upcomingSessions.length > 0 ? (
+              upcomingSessions.map(session => (
+                <Card key={session.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={session.image} alt={session.mentorName} />
+                        <AvatarFallback>{session.mentorName.charAt(0)}</AvatarFallback>
+                      </Avatar>
                       
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-2">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          <span>{session.date}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          <span>{session.time}</span>
-                        </div>
-                        <div className="flex items-center">
-                          {session.status === "confirmed" ? (
-                            <span className="text-green-600 font-medium">Confirmed</span>
-                          ) : (
-                            <span className="text-yellow-600 font-medium">Pending</span>
-                          )}
+                      <div className="flex-1 space-y-1">
+                        <h3 className="text-xl font-semibold">{session.topic}</h3>
+                        <p className="text-gray-700">with {session.mentorName}, {session.mentorRole}</p>
+                        
+                        <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-2">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            <span>{session.date}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            <span>{session.time}</span>
+                          </div>
+                          <div className="flex items-center">
+                            {session.status === "confirmed" ? (
+                              <span className="text-green-600 font-medium">Confirmed</span>
+                            ) : (
+                              <span className="text-yellow-600 font-medium">Pending</span>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      
+                      <div className="flex flex-col md:flex-row gap-2">
+                        <Button variant="outline" className="flex items-center gap-1">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>Message</span>
+                        </Button>
+                        <Button 
+                          className="bg-learner-500 hover:bg-learner-600 flex items-center gap-1"
+                          disabled={session.status !== "confirmed"}
+                        >
+                          <Video className="h-4 w-4" />
+                          <span>Join Session</span>
+                        </Button>
+                      </div>
                     </div>
-                    
-                    <div className="flex flex-col md:flex-row gap-2">
-                      <Button variant="outline" className="flex items-center gap-1">
-                        <MessageSquare className="h-4 w-4" />
-                        <span>Message</span>
-                      </Button>
-                      <Button 
-                        className="bg-learner-500 hover:bg-learner-600 flex items-center gap-1"
-                        disabled={session.status !== "confirmed"}
-                      >
-                        <Video className="h-4 w-4" />
-                        <span>Join Session</span>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">You don't have any upcoming sessions.</p>
+                <Button 
+                  className="mt-4 bg-mentor-500 hover:bg-mentor-600"
+                  onClick={handleScheduleSession}
+                >
+                  Schedule Your First Session
+                </Button>
+              </div>
+            )}
           </div>
         </TabsContent>
         
         <TabsContent value="past">
           <div className="space-y-6">
-            {pastSessions.map(session => (
-              <Card key={session.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row items-center gap-6">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src={session.image} alt={session.mentorName} />
-                      <AvatarFallback>{session.mentorName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 space-y-1">
-                      <h3 className="text-xl font-semibold">{session.topic}</h3>
-                      <p className="text-gray-700">with {session.mentorName}, {session.mentorRole}</p>
+            {pastSessions.length > 0 ? (
+              pastSessions.map(session => (
+                <Card key={session.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={session.image} alt={session.mentorName} />
+                        <AvatarFallback>{session.mentorName.charAt(0)}</AvatarFallback>
+                      </Avatar>
                       
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-2">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          <span>{session.date}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          <span>{session.time}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-gray-600 font-medium">Completed</span>
+                      <div className="flex-1 space-y-1">
+                        <h3 className="text-xl font-semibold">{session.topic}</h3>
+                        <p className="text-gray-700">with {session.mentorName}, {session.mentorRole}</p>
+                        
+                        <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-2">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            <span>{session.date}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            <span>{session.time}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className="text-gray-600 font-medium">Completed</span>
+                          </div>
                         </div>
                       </div>
+                      
+                      <div className="flex flex-col md:flex-row gap-2">
+                        {session.feedback ? (
+                          <Button variant="outline" disabled>Feedback Submitted</Button>
+                        ) : (
+                          <Button className="bg-mentor-500 hover:bg-mentor-600">
+                            Leave Feedback
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    
-                    <div className="flex flex-col md:flex-row gap-2">
-                      {session.feedback ? (
-                        <Button variant="outline" disabled>Feedback Submitted</Button>
-                      ) : (
-                        <Button className="bg-mentor-500 hover:bg-mentor-600">
-                          Leave Feedback
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">You don't have any past sessions.</p>
+              </div>
+            )}
           </div>
         </TabsContent>
         

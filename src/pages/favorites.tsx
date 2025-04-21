@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Heart } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from '@/components/ui/use-toast';
 
 const mentors = [
   {
@@ -61,11 +63,49 @@ const resources = [
 ];
 
 const Favorites: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("mentors");
+  
+  useEffect(() => {
+    // Simulate data loading
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  const handleRemoveFavorite = (id: number, type: 'mentor' | 'resource') => {
+    toast({
+      title: "Removed from favorites",
+      description: `${type === 'mentor' ? 'Mentor' : 'Resource'} has been removed from your favorites.`,
+    });
+  };
+  
+  if (loading) {
+    return (
+      <div className="container mx-auto py-8">
+        <Skeleton className="h-10 w-64 mb-6" />
+        
+        <div className="mb-8">
+          <Skeleton className="h-10 w-full" />
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-64 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">My Favorites</h1>
       
-      <Tabs defaultValue="mentors">
+      <Tabs defaultValue="mentors" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-8">
           <TabsTrigger value="mentors">Mentors</TabsTrigger>
           <TabsTrigger value="resources">Resources</TabsTrigger>
@@ -81,6 +121,7 @@ const Favorites: React.FC = () => {
                     variant="ghost" 
                     size="icon" 
                     className="absolute right-2 top-2 text-red-500 hover:text-red-600 hover:bg-transparent"
+                    onClick={() => handleRemoveFavorite(mentor.id, 'mentor')}
                   >
                     <Heart className="h-5 w-5 fill-current" />
                   </Button>
@@ -146,6 +187,7 @@ const Favorites: React.FC = () => {
                       variant="ghost" 
                       size="icon" 
                       className="text-red-500 hover:text-red-600 hover:bg-transparent"
+                      onClick={() => handleRemoveFavorite(resource.id, 'resource')}
                     >
                       <Heart className="h-5 w-5 fill-current" />
                     </Button>
