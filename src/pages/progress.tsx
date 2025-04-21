@@ -1,9 +1,12 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { fetchUserProgress, fetchLearningPath, updateLearningPathItem, type SkillProgress, type LearningPath } from '@/lib/supabase/progress';
+import { toast } from '@/components/ui/use-toast';
 
 const skillProgress = [
   { name: 'Leadership', progress: 75 },
@@ -31,6 +34,60 @@ const learningPath = [
 ];
 
 const ProgressTracker: React.FC = () => {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id);
+      }
+    };
+    getUser();
+  }, []);
+
+  const { data: skillProgress = [], isLoading: isLoadingSkills } = useQuery({
+    queryKey: ['skillProgress', userId],
+    queryFn: () => fetchUserProgress(userId!),
+    enabled: !!userId,
+  });
+
+  const { data: learningPathItems = [], isLoading: isLoadingPath } = useQuery({
+    queryKey: ['learningPath', userId],
+    queryFn: () => fetchLearningPath(userId!),
+    enabled: !!userId,
+  });
+
+  const updatePathItemMutation = useMutation({
+    mutationFn: ({ itemId, completed }: { itemId: string; completed: boolean }) =>
+      updateLearningPathItem(userId!, itemId, completed),
+    onSuccess: () => {
+      toast({
+        title: "Progress updated",
+        description: "Your learning path has been updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update progress. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  if (!userId) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardContent className="py-8">
+            <p className="text-center text-gray-500">Please log in to view your progress.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">Progress Tracker</h1>
@@ -147,15 +204,19 @@ const ProgressTracker: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {skillProgress.map((skill) => (
-                  <div key={skill.name} className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="font-medium">{skill.name}</span>
-                      <span>{skill.progress}%</span>
+                {isLoadingSkills ? (
+                  <p>Loading skills...</p>
+                ) : (
+                  skillProgress.map((skill: SkillProgress) => (
+                    <div key={skill.id} className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="font-medium">{skill.skill_name}</span>
+                        <span>{skill.progress}%</span>
+                      </div>
+                      <Progress value={skill.progress} className="h-2" />
                     </div>
-                    <Progress value={skill.progress} className="h-2" />
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -169,26 +230,30 @@ const ProgressTracker: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="relative border-l-2 border-gray-200 ml-3 pl-8 py-4 space-y-10">
-                {learningPath.map((item, index) => (
-                  <div key={item.id} className="relative">
-                    <div className={`absolute w-6 h-6 rounded-full -left-11 flex items-center justify-center ${
-                      item.completed ? 'bg-green-500' : 'bg-gray-300'
-                    }`}>
-                      {item.completed && (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                {isLoadingPath ? (
+                  <p>Loading learning path...</p>
+                ) : (
+                  learningPathItems.map((item: LearningPath, index: number) => (
+                    <div key={item.id} className="relative">
+                      <div className={`absolute w-6 h-6 rounded-full -left-11 flex items-center justify-center ${
+                        item.completed ? 'bg-green-500' : 'bg-gray-300'
+                      }`}>
+                        {item.completed && (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="mb-1 text-lg font-semibold">{item.title}</div>
+                      <div className="text-sm text-gray-500">
+                        {item.completed ? 'Completed' : 'In progress'}
+                      </div>
+                      {index < learningPathItems.length - 1 && (
+                        <div className="absolute h-12 border-l-2 border-gray-200 -left-11 top-6"></div>
                       )}
                     </div>
-                    <div className="mb-1 text-lg font-semibold">{item.title}</div>
-                    <div className="text-sm text-gray-500">
-                      {item.completed ? 'Completed' : 'In progress'}
-                    </div>
-                    {index < learningPath.length - 1 && (
-                      <div className="absolute h-12 border-l-2 border-gray-200 -left-11 top-6"></div>
-                    )}
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
