@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
@@ -35,43 +35,41 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <SidebarProvider defaultOpen={false}>
-          <div className="flex min-h-screen w-full bg-background">
-            <AppSidebar />
-            <main className="flex-1 flex flex-col">
-              <Navbar />
-              <div className="p-4 flex-1">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/how-it-works" element={<HowItWorks />} />
-                  <Route path="/browse" element={<BrowseMentors />} />
-                  <Route path="/mentor/:id" element={<MentorProfile />} />
-                  <Route path="/resources" element={<Resources />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/verify" element={<VerifyAccount />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  
-                  {/* Sidebar routes */}
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/learning" element={<MyLearning />} />
-                  <Route path="/favorites" element={<Favorites />} />
-                  <Route path="/mentors" element={<MyMentors />} />
-                  <Route path="/sessions" element={<MySessions />} />
-                  <Route path="/progress" element={<ProgressTracker />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/help" element={<Help />} />
-                  <Route path="/switch-role" element={<SwitchRole />} />
-                  
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
-              <Chat />
-            </main>
-          </div>
-        </SidebarProvider>
-      </BrowserRouter>
+      <SidebarProvider defaultOpen={false}>
+        <div className="flex min-h-screen w-full bg-background">
+          <AppSidebar />
+          <main className="flex-1 flex flex-col">
+            <Navbar />
+            <div className="p-4 flex-1">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/browse" element={<BrowseMentors />} />
+                <Route path="/mentor/:id" element={<MentorProfile />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/verify" element={<VerifyAccount />} />
+                <Route path="/pricing" element={<Pricing />} />
+                
+                {/* Sidebar routes */}
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/learning" element={<MyLearning />} />
+                <Route path="/favorites" element={<Favorites />} />
+                <Route path="/mentors" element={<MyMentors />} />
+                <Route path="/sessions" element={<MySessions />} />
+                <Route path="/progress" element={<ProgressTracker />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/switch-role" element={<SwitchRole />} />
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+            <Chat />
+          </main>
+        </div>
+      </SidebarProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
