@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -113,18 +114,18 @@ const BecomeMentor: React.FC = () => {
         throw profileError;
       }
       
-      // Then manually insert mentor-specific details
-      // Since the table doesn't exist in the TypeScript types,
-      // we'll use a more manual approach with executeQuery
-      const { error: mentorError } = await supabase
-        .rpc('insert_mentor_profile', {
+      // Use our custom RPC function to insert mentor profile
+      const { error: mentorError } = await supabase.rpc(
+        'insert_mentor_profile',
+        {
           user_id: session.user.id,
           bio: values.bio,
           experience_years: values.experience,
           hourly_rate: values.hourlyRate,
           expertise: values.expertise,
           availability: values.availability
-        });
+        }
+      );
       
       if (mentorError) {
         throw mentorError;

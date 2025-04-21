@@ -55,20 +55,9 @@ const MentorDashboard: React.FC = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
-          // Get profile data
-          const { data: profileData, error } = await supabase
-            .from('profiles')
-            .select('first_name, last_name')
-            .eq('id', session.user.id)
-            .single();
-            
-          if (profileData && !error && profileData.first_name && profileData.last_name) {
-            setUserName(`${profileData.first_name} ${profileData.last_name}`);
-          } else {
-            // Fallback to email username
-            const userEmail = session.user.email || '';
-            setUserName(userEmail.split('@')[0]);
-          }
+          // Use email username for display instead of first/last name
+          const userEmail = session.user.email || '';
+          setUserName(userEmail.split('@')[0]);
           
           // In a real app, you'd fetch actual stats and session data here
           // For this demo, we'll use the mock data

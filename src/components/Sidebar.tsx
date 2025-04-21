@@ -43,23 +43,20 @@ const Sidebar = () => {
       if (session?.user) {
         setUserEmail(session.user.email || '');
         
-        // Try to get first and last name from profiles table
-        const { data: profileData, error } = await supabase
+        // Try to get user profile data from profiles table
+        const { data, error } = await supabase
           .from('profiles')
-          .select('first_name, last_name, role')
+          .select('email, role')
           .eq('id', session.user.id)
           .single();
         
-        if (profileData && !error) {
-          if (profileData.first_name && profileData.last_name) {
-            setUserName(`${profileData.first_name} ${profileData.last_name}`);
-          } else {
-            // Fallback to email username
-            setUserName(session.user.email?.split('@')[0] || 'User');
-          }
+        if (data && !error) {
+          // Just use email username for display name for now
+          const emailUsername = session.user.email?.split('@')[0] || 'User';
+          setUserName(emailUsername);
           
-          if (profileData.role) {
-            setUserRole(profileData.role as 'student' | 'mentor');
+          if (data.role) {
+            setUserRole(data.role as 'student' | 'mentor');
           }
         } else {
           // Fallback to email username
