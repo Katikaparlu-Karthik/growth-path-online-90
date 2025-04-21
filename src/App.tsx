@@ -12,6 +12,7 @@ import MentorProfile from "./pages/MentorProfile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import VerifyAccount from "./pages/VerifyAccount";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify" element={<VerifyAccount />} />
+          <Route path="/pricing" element={<Pricing />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
