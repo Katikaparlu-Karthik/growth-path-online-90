@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -114,31 +113,23 @@ const BecomeMentor: React.FC = () => {
         throw profileError;
       }
       
-      // Use our custom RPC function to insert mentor profile
-      // We need to use a type assertion to work with the custom RPC function
-      // TypeScript doesn't know about this function since it's defined in SQL
-      interface MentorProfileParams {
-        user_id: string;
-        bio: string;
-        experience_years: string;
-        hourly_rate: string;
-        expertise: string[];
-        availability: string[];
-      }
+      // Define the function type explicitly to bypass TypeScript's limitations
+      type RPCFunction = <T = any>(fn: string, params?: any) => Promise<{ data: T; error: any }>;
       
-      const mentorParams: MentorProfileParams = {
-        user_id: session.user.id,
-        bio: values.bio,
-        experience_years: values.experience,
-        hourly_rate: values.hourlyRate,
-        expertise: values.expertise,
-        availability: values.availability
-      };
+      // Cast the rpc method to our custom type
+      const rpcCall = supabase.rpc as RPCFunction;
       
-      const { error: mentorError } = await supabase.rpc(
-        'insert_mentor_profile',
-        mentorParams
-      ) as { error: any };
+      const { error: mentorError } = await rpcCall(
+        'insert_mentor_profile', 
+        {
+          user_id: session.user.id,
+          bio: values.bio,
+          experience_years: values.experience,
+          hourly_rate: values.hourlyRate,
+          expertise: values.expertise,
+          availability: values.availability
+        }
+      );
       
       if (mentorError) {
         throw mentorError;
