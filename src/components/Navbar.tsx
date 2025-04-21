@@ -7,20 +7,44 @@ import SignupModal from './SignupModal';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/use-toast';
-import { AlignJustify } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Navbar: React.FC = () => {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [signupModalOpen, setSignupModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<'student' | 'mentor'>('student');
   const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
+      async (event, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        
+        if (currentUser) {
+          // Fetch user role from profiles table
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', currentUser.id)
+            .single();
+            
+          if (data && !error) {
+            setUserRole(data.role as 'student' | 'mentor');
+            // Store role in localStorage for persistence
+            localStorage.setItem('userRole', data.role);
+          } else {
+            // Default to student if no role found
+            setUserRole('student');
+            localStorage.setItem('userRole', 'student');
+          }
+          
+          // Store session for persistence
+          localStorage.setItem('supabase.auth.token', JSON.stringify(session));
+        }
         
         // If this is a sign in event, show a welcome toast
         if (event === 'SIGNED_IN') {
@@ -36,14 +60,61 @@ const Navbar: React.FC = () => {
             title: "Goodbye!",
             description: "You have been signed out",
           });
+          // Clear persisted data
+          localStorage.removeItem('supabase.auth.token');
+          localStorage.removeItem('userRole');
         }
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    const checkExistingSession = async () => {
+      // First try to get session from Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        setUser(session.user);
+        
+        // Fetch user role
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+          
+        if (data && !error) {
+          setUserRole(data.role as 'student' | 'mentor');
+        } else {
+          setUserRole('student');
+        }
+      } else {
+        // If no active session, check localStorage as fallback
+        const persistedSession = localStorage.getItem('supabase.auth.token');
+        const persistedRole = localStorage.getItem('userRole');
+        
+        if (persistedSession) {
+          try {
+            const parsedSession = JSON.parse(persistedSession);
+            // Attempt to restore session
+            await supabase.auth.setSession({
+              access_token: parsedSession.access_token,
+              refresh_token: parsedSession.refresh_token,
+            });
+            // Session will be picked up by the onAuthStateChange listener
+          } catch (e) {
+            console.error("Failed to restore session:", e);
+            localStorage.removeItem('supabase.auth.token');
+            localStorage.removeItem('userRole');
+          }
+        }
+        
+        if (persistedRole) {
+          setUserRole(persistedRole as 'student' | 'mentor');
+        }
+      }
+    };
+    
+    checkExistingSession();
 
     return () => {
       subscription.unsubscribe();
@@ -106,14 +177,23 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
           {user ? (
-            <div className="flex items-center">
-              <span className="hidden md:inline-block text-sm mr-4">
+            <div className="flex items-center gap-6">
+              {userRole === 'student' && (
+                <Button
+                  variant="outline" 
+                  className="hidden md:inline-flex border-mentor-500 text-mentor-500 hover:bg-mentor-50"
+                  onClick={() => navigate('/become-mentor')}
+                >
+                  Become a Mentor
+                </Button>
+              )}
+              <span className="hidden md:inline-block text-sm">
                 {getFirstName(user.email || '')}
               </span>
               <SidebarTrigger className="inline-flex">
-                <AlignJustify className="h-6 w-6" />
+                <Menu className="h-6 w-6" />
               </SidebarTrigger>
             </div>
           ) : (

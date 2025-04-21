@@ -9,10 +9,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 
@@ -45,6 +44,34 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onOpenChange, onSignUpC
           variant: "destructive",
         });
         return;
+      }
+
+      // Store session for persistence
+      localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+      
+      // Check if user has a profile and retrieve role
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+        
+      if (profileData && !profileError) {
+        localStorage.setItem('userRole', profileData.role);
+      } else {
+        // Default to student if no role is found
+        localStorage.setItem('userRole', 'student');
+        
+        // Create a profile if one doesn't exist
+        await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email: data.user.email,
+            role: 'student',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
       }
 
       toast({
