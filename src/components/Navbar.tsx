@@ -7,7 +7,7 @@ import SignupModal from './SignupModal';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { toast } from '@/components/ui/use-toast';
-import { Menu } from 'lucide-react';
+import { AlignJustify } from 'lucide-react';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Navbar: React.FC = () => {
@@ -83,10 +83,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="w-full py-4 px-4 md:px-8 border-b bg-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger className="md:hidden">
-            <Menu className="h-6 w-6" />
-          </SidebarTrigger>
+        <div className="flex items-center">
           <Link to="/" className="flex items-center">
             <span className="text-2xl font-bold text-mentor-500">
               Growth<span className="text-learner-500">Path</span>
@@ -94,7 +91,7 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-8">
           <Link to="/browse" className="text-gray-700 hover:text-mentor-500 font-medium transition-colors">
             Find Mentors
           </Link>
@@ -109,14 +106,14 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
           {user ? (
             <>
-              <span className="hidden md:inline-block text-sm">
+              <span className="hidden md:inline-block text-sm mr-2">
                 {getFirstName(user.email || '')}
               </span>
-              <SidebarTrigger className="hidden md:inline-flex">
-                <Menu className="h-6 w-6" />
+              <SidebarTrigger className="inline-flex">
+                <AlignJustify className="h-6 w-6" />
               </SidebarTrigger>
             </>
           ) : (
