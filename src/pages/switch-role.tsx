@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Users, GraduationCap } from 'lucide-react';
 
 interface RoleCardProps {
   role: 'mentee' | 'mentor';
@@ -58,17 +59,31 @@ const RoleCard: React.FC<RoleCardProps> = ({
             ))}
           </ul>
         </div>
-        <Button 
-          className={`w-full ${
-            role === 'mentee' 
-              ? 'bg-learner-500 hover:bg-learner-600' 
-              : 'bg-mentor-500 hover:bg-mentor-600'
-          }`}
-          disabled={active}
-          onClick={onSelect}
-        >
-          {active ? 'Current Role' : 'Switch to this Role'}
-        </Button>
+        <div className="space-y-4">
+          <ToggleGroup type="single" value={active ? role : undefined} onValueChange={(value) => {
+            if (value) onSelect();
+          }}>
+            <ToggleGroupItem value="mentee" aria-label="Toggle mentee role" className="w-full data-[state=on]:bg-learner-500 data-[state=on]:text-white">
+              <Users className="mr-2 h-4 w-4" />
+              Student Role
+            </ToggleGroupItem>
+            <ToggleGroupItem value="mentor" aria-label="Toggle mentor role" className="w-full data-[state=on]:bg-mentor-500 data-[state=on]:text-white">
+              <GraduationCap className="mr-2 h-4 w-4" />
+              Mentor Role
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Button 
+            className={`w-full ${
+              role === 'mentee' 
+                ? 'bg-learner-500 hover:bg-learner-600' 
+                : 'bg-mentor-500 hover:bg-mentor-600'
+            }`}
+            disabled={active}
+            onClick={onSelect}
+          >
+            {active ? 'Current Role' : 'Switch to this Role'}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
