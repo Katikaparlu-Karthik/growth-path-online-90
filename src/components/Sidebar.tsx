@@ -44,13 +44,13 @@ const Sidebar = () => {
         setUserEmail(session.user.email || '');
         
         // Try to get first and last name from profiles table
-        const { data: profileData } = await supabase
+        const { data: profileData, error } = await supabase
           .from('profiles')
           .select('first_name, last_name, role')
           .eq('id', session.user.id)
           .single();
         
-        if (profileData) {
+        if (profileData && !error) {
           if (profileData.first_name && profileData.last_name) {
             setUserName(`${profileData.first_name} ${profileData.last_name}`);
           } else {

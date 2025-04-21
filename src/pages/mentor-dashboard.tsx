@@ -56,13 +56,13 @@ const MentorDashboard: React.FC = () => {
         
         if (session) {
           // Get profile data
-          const { data: profileData } = await supabase
+          const { data: profileData, error } = await supabase
             .from('profiles')
             .select('first_name, last_name')
             .eq('id', session.user.id)
             .single();
             
-          if (profileData && profileData.first_name && profileData.last_name) {
+          if (profileData && !error && profileData.first_name && profileData.last_name) {
             setUserName(`${profileData.first_name} ${profileData.last_name}`);
           } else {
             // Fallback to email username

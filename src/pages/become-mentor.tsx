@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,7 +23,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -115,17 +113,17 @@ const BecomeMentor: React.FC = () => {
         throw profileError;
       }
       
-      // Then insert mentor-specific details
+      // Then manually insert mentor-specific details
+      // Since the table doesn't exist in the TypeScript types,
+      // we'll use a more manual approach with executeQuery
       const { error: mentorError } = await supabase
-        .from('mentor_profiles')
-        .insert({
+        .rpc('insert_mentor_profile', {
           user_id: session.user.id,
           bio: values.bio,
           experience_years: values.experience,
           hourly_rate: values.hourlyRate,
           expertise: values.expertise,
-          availability: values.availability,
-          created_at: new Date().toISOString(),
+          availability: values.availability
         });
       
       if (mentorError) {
