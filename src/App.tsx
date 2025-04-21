@@ -26,6 +26,7 @@ import ProgressTracker from "./pages/progress";
 import Settings from "./pages/settings";
 import Help from "./pages/help";
 import SwitchRole from "./pages/switch-role";
+import Chat from "./components/chat/Chat";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
+              <Chat />
             </main>
           </div>
         </SidebarProvider>
