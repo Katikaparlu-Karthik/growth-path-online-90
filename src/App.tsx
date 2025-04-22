@@ -15,6 +15,7 @@ import BrowseMentors from "./pages/BrowseMentors";
 import MentorProfile from "./pages/MentorProfile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import MentorSignup from "./pages/MentorSignup";
 import VerifyAccount from "./pages/VerifyAccount";
 import Pricing from "./pages/Pricing";
 import Resources from "./pages/Resources";
@@ -163,6 +164,7 @@ const App = () => (
                 <Route path="/resources" element={<Resources />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/mentor-signup" element={<MentorSignup />} />
                 <Route path="/verify" element={<VerifyAccount />} />
                 <Route path="/pricing" element={<Pricing />} />
                 

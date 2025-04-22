@@ -1,8 +1,6 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Calendar, Clock, Award, Book, Globe, CheckCircle, ChevronRight, MessageSquare } from 'lucide-react';
@@ -88,7 +86,7 @@ const MentorProfile: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      {/* Navbar is already included in App.tsx, so we don't need it here */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Back navigation */}
@@ -302,8 +300,6 @@ const MentorProfile: React.FC = () => {
           </div>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };

@@ -184,7 +184,7 @@ const Navbar: React.FC = () => {
                 <Button
                   variant="outline" 
                   className="hidden md:inline-flex border-mentor-500 text-mentor-500 hover:bg-mentor-50"
-                  onClick={() => navigate('/become-mentor')}
+                  onClick={() => navigate('/mentor-signup')}
                 >
                   Become a Mentor
                 </Button>

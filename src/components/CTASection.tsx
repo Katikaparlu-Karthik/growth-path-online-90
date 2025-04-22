@@ -24,7 +24,12 @@ const CTASection: React.FC = () => {
             <Button size="lg" className="bg-white text-mentor-500 hover:bg-gray-100">
               Find Your Mentor
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-white text-white hover:bg-white/10"
+              onClick={() => window.location.href = '/mentor-signup'}
+            >
               Become a Mentor
             </Button>
           </div>

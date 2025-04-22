@@ -20,7 +20,12 @@ const HeroSection: React.FC = () => {
             <Button size="lg" className="bg-mentor-500 hover:bg-mentor-600 text-white px-8">
               Find a Mentor
             </Button>
-            <Button size="lg" variant="outline" className="border-mentor-500 text-mentor-500 hover:bg-mentor-50">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="border-mentor-500 text-mentor-500 hover:bg-mentor-50"
+              onClick={() => window.location.href = '/mentor-signup'}
+            >
               Become a Mentor
             </Button>
           </div>

@@ -104,7 +104,12 @@ const PopularMentors: React.FC = () => {
                   <div className="text-lg font-semibold text-mentor-500">
                     ${mentor.price}<span className="text-sm text-gray-500 font-normal">/hour</span>
                   </div>
-                  <Button variant="outline" size="sm" className="border-mentor-500 text-mentor-500 hover:bg-mentor-50">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-mentor-500 text-mentor-500 hover:bg-mentor-50"
+                    onClick={() => window.location.href = `/mentor/${index + 1}`}
+                  >
                     View Profile
                   </Button>
                 </div>
