@@ -21,7 +21,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onOpenSignupModal }) => {
             Personalized mentorship to help you achieve your career goals faster.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <Button size="lg" className="bg-mentor-500 hover:bg-mentor-600 text-white px-8">
+            <Button 
+              size="lg" 
+              className="bg-mentor-500 hover:bg-mentor-600 text-white px-8"
+              onClick={() => onOpenSignupModal && onOpenSignupModal('learner')}
+            >
               Find a Mentor
             </Button>
             <Button 
