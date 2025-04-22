@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
 
-const HeroSection: React.FC = () => {
-  const navigate = useNavigate();
+interface HeroSectionProps {
+  onOpenSignupModal?: (role: 'mentor' | 'learner') => void;
+}
 
+const HeroSection: React.FC<HeroSectionProps> = ({ onOpenSignupModal }) => {
   return (
     <div className="relative bg-gradient-to-br from-white to-gray-50 overflow-hidden">
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80')] bg-cover bg-center opacity-10"></div>
@@ -27,7 +28,7 @@ const HeroSection: React.FC = () => {
               size="lg" 
               variant="outline" 
               className="border-mentor-500 text-mentor-500 hover:bg-mentor-50"
-              onClick={() => navigate('/mentor-signup')}
+              onClick={() => onOpenSignupModal && onOpenSignupModal('mentor')}
             >
               Become a Mentor
             </Button>

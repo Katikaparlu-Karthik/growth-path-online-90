@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,7 @@ interface SignupModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onLoginClick: () => void;
+  defaultRole?: 'learner' | 'mentor';
 }
 
 const formSchema = z.object({
@@ -57,10 +58,16 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
-const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLoginClick }) => {
+const SignupModal: React.FC<SignupModalProps> = ({
+  isOpen,
+  onOpenChange,
+  onLoginClick,
+  defaultRole = "learner"
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -71,11 +78,21 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onOpenChange, onLogin
       password: "",
       confirmPassword: "",
       phone: "",
-      role: "learner",
+      role: defaultRole,
       skills: "",
       goals: "",
     },
   });
+
+  // When defaultRole changes, update the form value
+  useEffect(() => {
+    if (initialized) {
+      form.setValue("role", defaultRole);
+    } else {
+      setInitialized(true); // avoid resetting initially on mount
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultRole]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {

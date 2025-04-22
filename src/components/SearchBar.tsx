@@ -18,19 +18,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
   const handleSearch = () => {
     const results = searchMentors(query, availability, experienceLevel);
-    
     if (onSearch) {
       onSearch(results);
     } else {
-      // Store results in session storage to retrieve on the browse page
+      // Pass all selected filters in session storage for Browse page
       sessionStorage.setItem('searchResults', JSON.stringify(results));
       sessionStorage.setItem('searchQuery', query);
       sessionStorage.setItem('searchAvailability', availability);
       sessionStorage.setItem('searchExperienceLevel', experienceLevel);
-      
-      // Navigate to browse page if not already there
+      // Go to browse if not already there
       if (window.location.pathname !== '/browse') {
         navigate('/browse');
+      } else {
+        // Reload page or re-trigger result if on /browse
+        window.dispatchEvent(new Event('search-update'));
       }
     }
   };
@@ -48,6 +49,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
                 className="w-full pl-10"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }} // allow enter to search
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             </div>

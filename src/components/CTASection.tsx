@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
 
-const CTASection: React.FC = () => {
-  const navigate = useNavigate();
+interface CTASectionProps {
+  onOpenSignupModal?: (role: 'mentor' | 'learner') => void;
+}
 
+const CTASection: React.FC<CTASectionProps> = ({ onOpenSignupModal }) => {
   return (
     <section className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-mentor-500 to-learner-500 opacity-90"></div>
@@ -31,7 +32,7 @@ const CTASection: React.FC = () => {
               size="lg" 
               variant="outline" 
               className="border-white text-white hover:bg-white/10"
-              onClick={() => navigate('/mentor-signup')}
+              onClick={() => onOpenSignupModal && onOpenSignupModal('mentor')}
             >
               Become a Mentor
             </Button>
