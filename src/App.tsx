@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -153,92 +152,101 @@ const App = () => (
         <div className="flex min-h-screen w-full bg-background">
           <AppSidebar />
           <main className="flex-1 flex flex-col">
-            <Navbar />
-            <div className="p-4 flex-1">
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<Index />} />
-                <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/browse" element={<BrowseMentors />} />
-                <Route path="/mentor/:id" element={<MentorProfile />} />
-                <Route path="/resources" element={<Resources />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/mentor-signup" element={<MentorSignup />} />
-                <Route path="/verify" element={<VerifyAccount />} />
-                <Route path="/pricing" element={<Pricing />} />
-                
-                {/* Protected routes for both roles */}
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
-                <Route path="/switch-role" element={<ProtectedRoute><SwitchRole /></ProtectedRoute>} />
-                <Route path="/become-mentor" element={<ProtectedRoute><BecomeMentor /></ProtectedRoute>} />
-                
-                {/* Student-specific routes */}
-                <Route path="/learning" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="student">
-                      <MyLearning />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                <Route path="/mentors" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="student">
-                      <MyMentors />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                <Route path="/sessions" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="student">
-                      <MySessions />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                <Route path="/progress" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="student">
-                      <ProgressTracker />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                
-                {/* Mentor-specific routes */}
-                <Route path="/mentor-dashboard" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="mentor">
-                      <MentorDashboard />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                <Route path="/students" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="mentor">
-                      <MyStudents />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                <Route path="/courses" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="mentor">
-                      <MyCourses />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                <Route path="/schedule" element={
-                  <ProtectedRoute>
-                    <RoleRoute requiredRole="mentor">
-                      <SessionSchedule />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
+            <Routes>
+              {/* Routes that don't need the navbar */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/verify" element={<VerifyAccount />} />
+              
+              {/* Routes that need the navbar */}
+              <Route
+                element={
+                  <>
+                    <Navbar />
+                    <div className="p-4 flex-1">
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/how-it-works" element={<HowItWorks />} />
+                        <Route path="/browse" element={<BrowseMentors />} />
+                        <Route path="/mentor/:id" element={<MentorProfile />} />
+                        <Route path="/resources" element={<Resources />} />
+                        <Route path="/pricing" element={<Pricing />} />
+                        {/* Protected routes */}
+                        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+                        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                        <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
+                        <Route path="/switch-role" element={<ProtectedRoute><SwitchRole /></ProtectedRoute>} />
+                        <Route path="/become-mentor" element={<ProtectedRoute><BecomeMentor /></ProtectedRoute>} />
+                        
+                        {/* Student-specific routes */}
+                        <Route path="/learning" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="student">
+                              <MyLearning />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/mentors" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="student">
+                              <MyMentors />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/sessions" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="student">
+                              <MySessions />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/progress" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="student">
+                              <ProgressTracker />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        
+                        {/* Mentor-specific routes */}
+                        <Route path="/mentor-dashboard" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="mentor">
+                              <MentorDashboard />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/students" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="mentor">
+                              <MyStudents />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/courses" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="mentor">
+                              <MyCourses />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/schedule" element={
+                          <ProtectedRoute>
+                            <RoleRoute requiredRole="mentor">
+                              <SessionSchedule />
+                            </RoleRoute>
+                          </ProtectedRoute>
+                        } />
+                        
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </div>
+                  </>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
             <Chat />
           </main>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,19 @@ const Navbar: React.FC = () => {
   const [signupModalOpen, setSignupModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<'student' | 'mentor'>('student');
+  const [defaultRole, setDefaultRole] = useState<'learner' | 'mentor'>('learner');
   const navigate = useNavigate();
+
+  const openLoginModal = () => {
+    setSignupModalOpen(false);
+    setLoginModalOpen(true);
+  };
+
+  const openSignupModal = (role: 'mentor' | 'learner' = 'learner') => {
+    setLoginModalOpen(false);
+    setSignupModalOpen(true);
+    setDefaultRole(role);
+  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -121,16 +132,6 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
-  const openLoginModal = () => {
-    setSignupModalOpen(false);
-    setLoginModalOpen(true);
-  };
-
-  const openSignupModal = () => {
-    setLoginModalOpen(false);
-    setSignupModalOpen(true);
-  };
-
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     
@@ -184,7 +185,7 @@ const Navbar: React.FC = () => {
                 <Button
                   variant="outline" 
                   className="hidden md:inline-flex border-mentor-500 text-mentor-500 hover:bg-mentor-50"
-                  onClick={() => navigate('/mentor-signup')}
+                  onClick={() => openSignupModal('mentor')}
                 >
                   Become a Mentor
                 </Button>
@@ -208,7 +209,7 @@ const Navbar: React.FC = () => {
               </Button>
               <Button 
                 className="bg-gradient-to-r from-mentor-500 to-learner-500 text-white hover:opacity-90"
-                onClick={openSignupModal}
+                onClick={() => openSignupModal()}
               >
                 Get Started
               </Button>
@@ -227,6 +228,7 @@ const Navbar: React.FC = () => {
         isOpen={signupModalOpen} 
         onOpenChange={setSignupModalOpen} 
         onLoginClick={openLoginModal}
+        defaultRole={defaultRole}
       />
     </nav>
   );

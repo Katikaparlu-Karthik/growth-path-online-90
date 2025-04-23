@@ -181,6 +181,39 @@ export type Database = {
           },
         ]
       }
+      learners: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          interests: string[] | null
+          learning_goals: string | null
+          preferred_learning_style: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          interests?: string[] | null
+          learning_goals?: string | null
+          preferred_learning_style?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          interests?: string[] | null
+          learning_goals?: string | null
+          preferred_learning_style?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       learning_path_items: {
         Row: {
           course_id: string | null
@@ -305,6 +338,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mentors: {
+        Row: {
+          availability_schedule: Json | null
+          bio: string | null
+          created_at: string | null
+          email: string | null
+          expertise_areas: string[] | null
+          full_name: string | null
+          hourly_rate: number | null
+          id: string
+          updated_at: string | null
+          years_of_experience: number | null
+        }
+        Insert: {
+          availability_schedule?: Json | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          expertise_areas?: string[] | null
+          full_name?: string | null
+          hourly_rate?: number | null
+          id: string
+          updated_at?: string | null
+          years_of_experience?: number | null
+        }
+        Update: {
+          availability_schedule?: Json | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          expertise_areas?: string[] | null
+          full_name?: string | null
+          hourly_rate?: number | null
+          id?: string
+          updated_at?: string | null
+          years_of_experience?: number | null
+        }
+        Relationships: []
       }
       mentorship_sessions: {
         Row: {
