@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -133,7 +132,6 @@ const SignupModal: React.FC<SignupModalProps> = ({
             full_name: values.name,
             role: values.role,
             phone: values.phone || null,
-            // Include additional metadata
             skills: values.skills || null,
             goals: values.goals || null,
           },
