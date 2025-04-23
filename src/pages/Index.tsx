@@ -1,5 +1,5 @@
-
 import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import HeroSection from '@/components/HeroSection';
 import SearchBar from '@/components/SearchBar';
 import FeaturesSection from '@/components/FeaturesSection';
@@ -11,17 +11,29 @@ import TestimonialsSection from '@/components/TestimonialsSection';
 import CTASection from '@/components/CTASection';
 import Footer from '@/components/Footer';
 import SignupModal from '@/components/SignupModal';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index: React.FC = () => {
-  // control the signup modal and track which role we want
+  const navigate = useNavigate();
   const [signupOpen, setSignupOpen] = useState(false);
   const [signupRole, setSignupRole] = useState<'learner' | 'mentor'>('learner');
 
   // Callback to open the modal for given role
-  const handleOpenSignupModal = useCallback((role: 'mentor' | 'learner') => {
+  const handleOpenSignupModal = useCallback(async (role: 'mentor' | 'learner') => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    
+    if (sessionData.session) {
+      // If user is logged in and wants to become a mentor, redirect to become-mentor page
+      if (role === 'mentor') {
+        navigate('/become-mentor');
+        return;
+      }
+    }
+    
+    // Otherwise open signup modal
     setSignupRole(role);
     setSignupOpen(true);
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-white">

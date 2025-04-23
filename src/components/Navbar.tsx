@@ -151,6 +151,14 @@ const Navbar: React.FC = () => {
   const getFirstName = (email: string) => {
     return email.split('@')[0];
   };
+  
+  const handleBecomeMentor = () => {
+    if (user) {
+      navigate('/become-mentor');
+    } else {
+      openSignupModal('mentor');
+    }
+  };
 
   return (
     <nav className="w-full py-4 px-4 md:px-8 border-b bg-white sticky top-0 z-50">
@@ -185,7 +193,7 @@ const Navbar: React.FC = () => {
                 <Button
                   variant="outline" 
                   className="hidden md:inline-flex border-mentor-500 text-mentor-500 hover:bg-mentor-50"
-                  onClick={() => openSignupModal('mentor')}
+                  onClick={handleBecomeMentor}
                 >
                   Become a Mentor
                 </Button>

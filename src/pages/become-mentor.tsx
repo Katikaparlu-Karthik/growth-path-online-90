@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -72,6 +71,34 @@ const daysOfWeek = [
 const BecomeMentor: React.FC = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  useEffect(() => {
+    // Check if user is already a mentor
+    const checkMentorStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+        
+      if (profile?.role === 'mentor') {
+        toast({
+          title: "Already a mentor",
+          description: "You are already registered as a mentor",
+        });
+        navigate('/mentor-dashboard');
+      }
+    };
+    
+    checkMentorStatus();
+  }, [navigate]);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -159,48 +186,113 @@ const BecomeMentor: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 max-w-3xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">Become a Mentor</CardTitle>
-          <CardDescription className="text-center">
-            Share your expertise and help others grow while building your professional reputation
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="bio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Professional Bio</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Tell us about your professional background, achievements, and what you can offer as a mentor..." 
-                        className="min-h-32"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      This will be displayed on your mentor profile.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid md:grid-cols-2 gap-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto py-8 max-w-4xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Become a Mentor</CardTitle>
+            <CardDescription className="text-center">
+              Share your expertise and help others grow while building your professional reputation
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                   control={form.control}
-                  name="experience"
+                  name="bio"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Years of Experience</FormLabel>
+                      <FormLabel>Professional Bio</FormLabel>
                       <FormControl>
-                        <Input type="number" min="1" {...field} />
+                        <Textarea 
+                          placeholder="Tell us about your professional background, achievements, and what you can offer as a mentor..." 
+                          className="min-h-32"
+                          {...field} 
+                        />
                       </FormControl>
+                      <FormDescription>
+                        This will be displayed on your mentor profile.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="experience"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Years of Experience</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="1" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="hourlyRate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Hourly Rate (USD)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={form.control}
+                  name="expertise"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Areas of Expertise</FormLabel>
+                      <FormDescription>
+                        Select all areas where you can provide mentorship
+                      </FormDescription>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                        {expertiseOptions.map((option) => (
+                          <FormField
+                            key={option.id}
+                            control={form.control}
+                            name="expertise"
+                            render={({ field }) => {
+                              return (
+                                <FormItem
+                                  key={option.id}
+                                  className="flex flex-row items-start space-x-3 space-y-0"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(option.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...field.value, option.id])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== option.id
+                                              )
+                                            )
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    {option.label}
+                                  </FormLabel>
+                                </FormItem>
+                              )
+                            }}
+                          />
+                        ))}
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -208,153 +300,90 @@ const BecomeMentor: React.FC = () => {
                 
                 <FormField
                   control={form.control}
-                  name="hourlyRate"
-                  render={({ field }) => (
+                  name="availability"
+                  render={() => (
                     <FormItem>
-                      <FormLabel>Hourly Rate (USD)</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="0" {...field} />
-                      </FormControl>
+                      <FormLabel>Availability</FormLabel>
+                      <FormDescription>
+                        Select days when you're typically available for mentoring sessions
+                      </FormDescription>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                        {daysOfWeek.map((day) => (
+                          <FormField
+                            key={day.id}
+                            control={form.control}
+                            name="availability"
+                            render={({ field }) => {
+                              return (
+                                <FormItem
+                                  key={day.id}
+                                  className="flex flex-row items-start space-x-3 space-y-0"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(day.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...field.value, day.id])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== day.id
+                                              )
+                                            )
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    {day.label}
+                                  </FormLabel>
+                                </FormItem>
+                              )
+                            }}
+                          />
+                        ))}
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="expertise"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Areas of Expertise</FormLabel>
-                    <FormDescription>
-                      Select all areas where you can provide mentorship
-                    </FormDescription>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
-                      {expertiseOptions.map((option) => (
-                        <FormField
-                          key={option.id}
-                          control={form.control}
-                          name="expertise"
-                          render={({ field }) => {
-                            return (
-                              <FormItem
-                                key={option.id}
-                                className="flex flex-row items-start space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(option.id)}
-                                    onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...field.value, option.id])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== option.id
-                                            )
-                                          )
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal">
-                                  {option.label}
-                                </FormLabel>
-                              </FormItem>
-                            )
-                          }}
+                
+                <FormField
+                  control={form.control}
+                  name="acceptTerms"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
                         />
-                      ))}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="availability"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Availability</FormLabel>
-                    <FormDescription>
-                      Select days when you're typically available for mentoring sessions
-                    </FormDescription>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
-                      {daysOfWeek.map((day) => (
-                        <FormField
-                          key={day.id}
-                          control={form.control}
-                          name="availability"
-                          render={({ field }) => {
-                            return (
-                              <FormItem
-                                key={day.id}
-                                className="flex flex-row items-start space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(day.id)}
-                                    onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([...field.value, day.id])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== day.id
-                                            )
-                                          )
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal">
-                                  {day.label}
-                                </FormLabel>
-                              </FormItem>
-                            )
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="acceptTerms"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Mentor Terms & Conditions
-                      </FormLabel>
-                      <FormDescription>
-                        I agree to the GrowthPath mentor terms and conditions, including quality standards and commitment to helping mentees grow.
-                      </FormDescription>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="flex justify-end space-x-4">
-                <Button variant="outline" type="button" onClick={() => navigate('/profile')}>
-                  Cancel
-                </Button>
-                <Button type="submit" className="bg-mentor-500 hover:bg-mentor-600" disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Submit Application"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Mentor Terms & Conditions
+                        </FormLabel>
+                        <FormDescription>
+                          I agree to the GrowthPath mentor terms and conditions, including quality standards and commitment to helping mentees grow.
+                        </FormDescription>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="flex justify-end space-x-4">
+                  <Button variant="outline" type="button" onClick={() => navigate('/profile')}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="bg-mentor-500 hover:bg-mentor-600" disabled={isSubmitting}>
+                    {isSubmitting ? "Submitting..." : "Submit Application"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
