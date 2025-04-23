@@ -151,16 +151,14 @@ const App = () => (
       <Sonner />
       <SidebarProvider defaultOpen={false}>
         <div className="flex min-h-screen w-full bg-background">
-          <AppSidebar />
           <main className="flex-1 flex flex-col">
-            <Navbar />
             <Routes>
-              {/* Routes that don't need the navbar wrapper */}
+              {/* Auth routes outside Layout */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/verify" element={<VerifyAccount />} />
               
-              {/* All other routes wrapped in Layout */}
+              {/* All other routes nested under Layout */}
               <Route element={<Layout />}>
                 <Route path="/" element={<Index />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />

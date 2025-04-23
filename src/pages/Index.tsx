@@ -48,7 +48,7 @@ const Index: React.FC = () => {
       <CTASection onOpenSignupModal={handleOpenSignupModal} />
       <Footer />
 
-      {/* Signup Modal always present, controlled */}
+      {/* Signup Modal */}
       <SignupModal
         isOpen={signupOpen}
         onOpenChange={setSignupOpen}
