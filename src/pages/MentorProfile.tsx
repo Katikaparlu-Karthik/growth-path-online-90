@@ -1,9 +1,10 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Calendar, Clock, Award, Book, Globe, CheckCircle, ChevronRight, MessageSquare } from 'lucide-react';
+import { Star, Calendar, Clock, Award, Book, Globe, CheckCircle, ChevronRight } from 'lucide-react';
+import ScheduleSessionButton from '@/components/session/ScheduleSessionButton';
+import MessageButton from '@/components/session/MessageButton';
 
 // Mock data for a sample mentor
 const mentorData = {
@@ -86,9 +87,6 @@ const MentorProfile: React.FC = () => {
   
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar is already included in App.tsx, so we don't need it here */}
-      {/* Removed duplicate Navbar import/render to prevent double navbar */}
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Back navigation */}
         <div className="mb-6">
@@ -154,20 +152,22 @@ const MentorProfile: React.FC = () => {
               </div>
               
               <div className="flex gap-3">
-                <Button variant="outline" className="gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  Message
-                </Button>
-                <Button className="gap-2 bg-mentor-500 hover:bg-mentor-600">
-                  <Calendar className="h-4 w-4" />
-                  Book a Session
-                </Button>
+                <MessageButton 
+                  mentorId={id || "1"} 
+                  mentorName={mentor.name}
+                />
+                <ScheduleSessionButton 
+                  mentorId={id || "1"} 
+                  mentorName={mentor.name}
+                  className="bg-mentor-500 hover:bg-mentor-600"
+                />
               </div>
             </div>
           </div>
         </div>
         
         {/* Profile content */}
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <Tabs defaultValue="about">
@@ -293,10 +293,11 @@ const MentorProfile: React.FC = () => {
                 ))}
               </div>
               
-              <Button className="w-full mt-8 bg-mentor-500 hover:bg-mentor-600">
-                <Calendar className="h-4 w-4 mr-2" />
-                Book a Session
-              </Button>
+              <ScheduleSessionButton
+                mentorId={id || "1"}
+                mentorName={mentor.name}
+                className="w-full mt-8 bg-mentor-500 hover:bg-mentor-600"
+              />
             </div>
           </div>
         </div>
