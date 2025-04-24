@@ -35,6 +35,7 @@ import SessionSchedule from "./pages/schedule";
 import Chat from "./components/chat/Chat";
 import { supabase } from "./integrations/supabase/client";
 import Layout from "./components/Layout";
+import Presentation from "./pages/Presentation";
 
 const queryClient = new QueryClient();
 
@@ -161,6 +162,7 @@ const App = () => (
               {/* All other routes nested under Layout */}
               <Route element={<Layout />}>
                 <Route path="/" element={<Index />} />
+                <Route path="/presentation" element={<Presentation />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/browse" element={<BrowseMentors />} />
                 <Route path="/mentor/:id" element={<MentorProfile />} />
